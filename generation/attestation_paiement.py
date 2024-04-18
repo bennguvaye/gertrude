@@ -134,7 +134,12 @@ class AttestationModifications(object):
             
             if facture_debut is None:
                 continue
-            
+          
+            reglement = 0.0
+            for encaissement in inscrit.famille.encaissements:
+                if encaissement.date and encaissement.date >= self.debut and encaissement.date <= self.fin:
+                    reglement += encaissement.valeur
+
             last_inscription = None
             for tmp in inscrit.inscriptions:
                 if not last_inscription or not last_inscription.fin or (tmp.fin and tmp.fin > last_inscription.fin):
@@ -154,6 +159,7 @@ class AttestationModifications(object):
                 ('ceil-heures-realisees', GetHeureString(math.ceil(heures_realisees))),
                 ('total-sans-activites', "%.2f" % total_sans_activites),
                 ('total', '%.2f' % total),
+                ('reglement', '%.2f' % reglement),
                 ('site', GetNom(site)),
                 ('dernier-mois', GetBoolStr(last_inscription.fin and last_inscription.fin <= facture_fin)),
             ]
